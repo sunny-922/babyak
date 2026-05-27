@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int           @id @default(autoincrement())
+  username      String        @unique
+  passwordHash  String
+  nickname      String
+  studentNumber String
+  createdAt     DateTime      @default(now())
+  pots          Pot[]
+  applications  Application[]
+}
+
+model Pot {
+  id           Int           @id @default(autoincrement())
+  title        String
+  description  String
+  place        String
+  meetingTime  DateTime
+  maxPeople    Int
+  status       String        @default("open")
+  createdAt    DateTime      @default(now())
+  creator      User          @relation(fields: [creatorId], references: [id])
+  creatorId    Int
+  applications Application[]
+}
+
+model Application {
+  id        Int      @id @default(autoincrement())
+  status    String   @default("pending")
+  message   String   @default("")
+  createdAt DateTime @default(now())
+  pot       Pot      @relation(fields: [potId], references: [id])
+  potId     Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+
+  @@unique([potId, userId])
+}
