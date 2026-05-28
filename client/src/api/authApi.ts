@@ -3,7 +3,7 @@ import { type ApiResponse, type User } from '../types';
 
 export const signup = (data: {
   username: string; password: string;
-  nickname: string; school: string; grade: string;
+  nickname: string; studentNumber: string;
 }) => api.post<ApiResponse<User>>('/auth/signup', data);
 
 export const login = (data: { username: string; password: string }) =>
