@@ -11,7 +11,9 @@ export default function PotCreatePage() {
     setLoading(true);
     try {
       const res = await createPot(data);
-      navigate(`/pots/${res.data!.id}`);
+      const id = (res as any).data?.id ?? (res as any).id;
+      if (!id) throw new Error('생성된 팟 ID를 가져올 수 없습니다.');
+      navigate(`/pots/${id}`);
     } catch (e: any) {
       alert(e.message);
     } finally {

@@ -11,7 +11,7 @@ export function useAuth() {
     if (!token) { setLoading(false); return; }
 
     getMe()
-      .then(res => setUser(res.data ?? null))
+      .then(res => setUser((res as any).data ?? res ?? null))
       .catch(() => localStorage.removeItem('token'))
       .finally(() => setLoading(false));
   }, []);

@@ -33,8 +33,8 @@ export default function PotDetailPage({ user }: Props) {
       getApplications(Number(potId)).catch(() => ({ data: [] as Application[] })),
     ])
       .then(([potRes, appRes]) => {
-        setPot(potRes.data ?? null);
-        setApplications(appRes.data ?? []);
+        setPot((potRes as any).data ?? potRes as any);
+        setApplications((appRes as any).data ?? appRes as any ?? []);
       })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
@@ -45,7 +45,7 @@ export default function PotDetailPage({ user }: Props) {
     try {
       await applyToPot(Number(potId), applyMessage);
       const res = await getApplications(Number(potId));
-      setApplications(res.data ?? []);
+      setApplications((res as any).data ?? res as any ?? []);
       setApplyMessage('');
       alert('신청 완료!');
     } catch (e: any) {

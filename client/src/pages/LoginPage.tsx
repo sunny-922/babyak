@@ -23,9 +23,12 @@ export default function LoginPage({ setUser }: Props) {
     setError('');
     try {
       const res = await login({ username, password });
-      localStorage.setItem('token', res.data!.token);
+      const token = (res as any).data?.token ?? (res as any).token;
+      if (!token) throw new Error('로그인 응답이 올바르지 않습니다.');
+      localStorage.setItem('token', token);
       const meRes = await getMe();
-      setUser(meRes.data!);
+      const me = (meRes as any).data ?? meRes;
+      setUser(me);
       navigate('/pots');
     } catch (e: any) {
       setError(e.message);

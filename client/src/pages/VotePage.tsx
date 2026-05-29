@@ -51,7 +51,8 @@ export default function VotePage({ user }: Props) {
         type: newVote.type,
         options: validOptions,
       });
-      setVotes(prev => [...prev, res.data!]);
+      const created = (res as any).data ?? res;
+      setVotes(prev => [...prev, created]);
       setShowForm(false);
       setNewVote({ title: '', type: '단일', options: ['', ''] });
     } catch (e: any) {
