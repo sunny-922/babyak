@@ -11,10 +11,10 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   app.enableCors({
-    origin: 'http://localhost:5173', // 정확히 이 주소인지 확인
+    origin: 'https://sunny.newbie.sparcs.net', // 정확히 이 주소인지 확인
     credentials: true,               // 쿠키나 세션을 사용한다면 필수
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 8000);
 }
 bootstrap();

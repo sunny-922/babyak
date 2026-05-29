@@ -33,6 +33,14 @@ export class ApplicationService {
     });
   }
 
+  getMyApplications(userId: number) {
+    return this.prisma.application.findMany({
+      where: { userId },
+      include: { pot: { select: { id: true, title: true, status: true, meetingTime: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async updateStatus(id: number, status: 'approved' | 'rejected', userId: number) {
     const app = await this.prisma.application.findUnique({
       where: { id },

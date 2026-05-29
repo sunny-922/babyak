@@ -23,7 +23,12 @@ export default function PotCard({ pot }: Props) {
       <p className="pot-card-desc">{pot.description}</p>
       <div className="pot-card-info">
         <span>📍 {pot.place}</span>
-        <span>📅 {new Date(pot.meetingTime || pot.meeting_time).toLocaleString()}</span>
+        <span>
+          📅 {(() => {
+            const t = pot.meetingTime || pot.meeting_time;
+            return t ? new Date(t).toLocaleString() : '일정 미정';
+          })()}
+        </span>
         <span>👥 최대 {pot.maxPeople || pot.max_people}명</span>
       </div>
     </div>

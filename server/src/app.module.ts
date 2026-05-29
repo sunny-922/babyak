@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { PotModule } from './pot/pot.module';
 import { VoteModule } from './vote/vote.module';
 import { ApplicationModule } from './application/application.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ApplicationModule } from './application/application.module';
     PotModule,
     VoteModule,
     ApplicationModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

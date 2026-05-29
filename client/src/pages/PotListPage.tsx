@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { getPots } from '../api/potApi';
-import { type Pot, type User } from '../types';
+import { type Pot } from '../types';
 import PotCard from '../components/PotCard';
 import SearchBar from '../components/SearchBar';
 import FilterBox from '../components/FilterBox';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 
-interface Props { user: User | null; }
-
-export default function PotListPage({ user }: Props) {
+export default function PotListPage() {
   const [searchParams] = useSearchParams();
   const [pots, setPots] = useState<Pot[]>([]);
   const [loading, setLoading] = useState(true);

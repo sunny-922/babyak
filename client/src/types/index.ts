@@ -14,6 +14,8 @@ export interface Pot {
   meeting_time?: string;
   maxPeople?: number;
   max_people?: number;
+  createdAt: string;
+  created_at: string;
   creatorId?: number;
   creator_id?: number;
   creator?: { nickname: string };
@@ -24,11 +26,16 @@ export interface Pot {
 export interface Application {
   id: number;
   pot_id: number;
+  potId: number;
   user_id: number;
   nickname: string;
   status: 'pending' | 'approved' | 'rejected';
   message: string;
   created_at: string;
+  createdAt: string;
+  user: {
+    nickname: string;
+  };
 }
 
 export interface Vote {
@@ -45,6 +52,15 @@ export interface VoteOption {
   id: number;
   voteId: number;
   content: string;
+}
+
+export interface Comment {
+  id: number;
+  content: string;
+  createdAt: string;
+  potId: number;
+  userId: number;
+  user: { nickname: string };
 }
 
 export interface ApiResponse<T> {

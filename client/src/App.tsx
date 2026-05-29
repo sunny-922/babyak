@@ -21,7 +21,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage setUser={auth.setUser} />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/pots" element={<PotListPage user={auth.user} />} />
+        <Route path="/pots" element={<PotListPage />} />
         <Route path="/pots/new" element={
           auth.user ? <PotCreatePage /> : <Navigate to="/login" />
         } />

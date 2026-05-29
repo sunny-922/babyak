@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { type User, type Vote, type Pot } from '../types';
+import { type User, type Vote } from '../types';
 import { getVotes, createVote } from '../api/voteApi';
 import { getPotById } from '../api/potApi';
 import { getApplications } from '../api/applicationApi';
@@ -15,7 +15,6 @@ export default function VotePage({ user }: Props) {
   const navigate = useNavigate();
 
   const [votes, setVotes] = useState<Vote[]>([]);
-  const [pot, setPot] = useState<Pot | null>(null);
   const [canCreateVote, setCanCreateVote] = useState(false);
   const [canVote, setCanVote] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -35,7 +34,6 @@ export default function VotePage({ user }: Props) {
         
         setVotes(votesRes.data ?? []);
         const potData = (potRes as any).data ?? potRes;
-        setPot(potData);
 
         if (user) {
           // creator인지 확인

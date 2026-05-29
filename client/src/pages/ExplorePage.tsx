@@ -27,9 +27,11 @@ export default function ExplorePage({ user }: Props) {
         if (sort === 'latest') data = [...data].sort((a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
-        if (sort === 'meeting') data = [...data].sort((a, b) =>
-          new Date(a.meetingTime).getTime() - new Date(b.meetingTime).getTime()
-        );
+        if (sort === 'meeting') data = [...data].sort((a, b) => {
+          const at = a.meetingTime ? new Date(a.meetingTime).getTime() : Infinity;
+          const bt = b.meetingTime ? new Date(b.meetingTime).getTime() : Infinity;
+          return at - bt;
+        });
         setPots(data);
       })
       .catch(e => setError(e.message))

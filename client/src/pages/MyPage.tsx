@@ -1,26 +1,38 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { type User, type Pot, type Application } from '../types';
+import { type User, type Pot } from '../types';
 import { getPots } from '../api/potApi';
-import { getApplications } from '../api/applicationApi';
+import { getMyApplications } from '../api/applicationApi';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 
 interface Props { user: User; }
 
+type MyApplication = {
+  id: number;
+  status: 'pending' | 'approved' | 'rejected';
+  message: string;
+  createdAt: string;
+  pot: { id: number; title: string; status: string; meetingTime: string };
+};
+
 export default function MyPage({ user }: Props) {
   const [myPots, setMyPots] = useState<Pot[]>([]);
-  const [myApplications, setMyApplications] = useState<(Application & { pot?: Pot })[]>([]);
+  const [myApplications, setMyApplications] = useState<MyApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tab, setTab] = useState<'created' | 'applied'>('created');
 
   useEffect(() => {
     setLoading(true);
-    getPots()
-      .then(res => {
-        const all = res.data ?? [];
+    Promise.all([
+      getPots(),
+      getMyApplications(),
+    ])
+      .then(([potsRes, appsRes]) => {
+        const all = potsRes.data ?? [];
         setMyPots(all.filter(p => p.creatorId === user.id));
+        setMyApplications((appsRes as any).data ?? []);
       })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
@@ -40,7 +52,7 @@ export default function MyPage({ user }: Props) {
       <div className="mypage-header">
         <div className="user-info">
           <h2>{user.nickname}님</h2>
-          <p>{user.school} · {user.grade}</p>
+          <p>{user.studentNumber}</p>
           <p>아이디: {user.username}</p>
         </div>
       </div>
@@ -56,7 +68,7 @@ export default function MyPage({ user }: Props) {
           className={`tab ${tab === 'applied' ? 'active' : ''}`}
           onClick={() => setTab('applied')}
         >
-          신청한 팟
+          신청한 팟 ({myApplications.length})
         </button>
       </div>
 
@@ -71,7 +83,7 @@ export default function MyPage({ user }: Props) {
                 </span>
                 <span className="mypage-pot-title">{pot.title}</span>
                 <span className="mypage-pot-date">
-                  {new Date(pot.meetingTime).toLocaleDateString()}
+                  {pot.meetingTime ? new Date(pot.meetingTime).toLocaleDateString() : '일정 미정'}
                 </span>
               </Link>
             ))
@@ -84,10 +96,13 @@ export default function MyPage({ user }: Props) {
           {myApplications.length === 0
             ? <p className="empty">신청한 팟이 없습니다.</p>
             : myApplications.map(app => (
-              <div key={app.id} className={`mypage-app-item status-${app.status}`}>
-                <span>{statusLabel[app.status]}</span>
-                <span>팟 #{app.potId}</span>
-              </div>
+              <Link to={`/pots/${app.pot.id}`} key={app.id} className="mypage-pot-item">
+                <span className={`badge status-badge-${app.status}`}>{statusLabel[app.status]}</span>
+                <span className="mypage-pot-title">{app.pot.title}</span>
+                <span className="mypage-pot-date">
+                  {app.pot.meetingTime ? new Date(app.pot.meetingTime).toLocaleDateString() : '일정 미정'}
+                </span>
+              </Link>
             ))
           }
         </div>

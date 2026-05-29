@@ -12,3 +12,6 @@ export const approveApplication = (id: number) =>
 
 export const rejectApplication = (id: number) =>
   api.patch<ApiResponse<null>>(`/applications/${id}/reject`, {});
+
+export const getMyApplications = () =>
+  api.get<ApiResponse<(Application & { pot: { id: number; title: string; status: string; meetingTime: string } })[]>>(`/users/me/applications`);

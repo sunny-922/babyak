@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getPotById, deletePot, updatePot } from '../api/potApi';
 import { getApplications, applyToPot, approveApplication, rejectApplication } from '../api/applicationApi';
-import { type Pot, type Application, type User } from '../types';
+import { getComments, createComment, deleteComment } from '../api/commentApi';
+import { type Pot, type Application, type User, type Comment } from '../types';
 import ApplicantList from '../components/ApplicantList';
 import PotForm, { type PotFormData } from '../components/PotForm';
 import Loading from '../components/Loading';
@@ -16,6 +17,8 @@ export default function PotDetailPage({ user }: Props) {
 
   const [pot, setPot] = useState<Pot | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentInput, setCommentInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [applying, setApplying] = useState(false);
@@ -32,14 +35,36 @@ export default function PotDetailPage({ user }: Props) {
     Promise.all([
       getPotById(Number(potId)),
       getApplications(Number(potId)).catch(() => ({ data: [] as Application[] })),
+      getComments(Number(potId)).catch(() => ({ data: [] as Comment[] })),
     ])
-      .then(([potRes, appRes]) => {
+      .then(([potRes, appRes, commentRes]) => {
         setPot((potRes as any).data ?? potRes as any);
         setApplications((appRes as any).data ?? appRes as any ?? []);
+        setComments((commentRes as any).data ?? []);
       })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [potId]);
+
+  const handleAddComment = async () => {
+    if (!commentInput.trim()) return;
+    try {
+      const res = await createComment(Number(potId), commentInput.trim());
+      setComments(prev => [...prev, (res as any).data]);
+      setCommentInput('');
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
+
+  const handleDeleteComment = async (id: number) => {
+    try {
+      await deleteComment(id);
+      setComments(prev => prev.filter(c => c.id !== id));
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
 
   const handleApply = async () => {
     setApplying(true);
@@ -116,12 +141,12 @@ export default function PotDetailPage({ user }: Props) {
 
       <div className="pot-detail">
         <h2>{pot.title}</h2>
-        <p className="pot-detail-creator">by {pot.creator.nickname}</p>
+        <p className="pot-detail-creator">by {pot.creator?.nickname}</p>
         <p className="pot-detail-desc">{pot.description}</p>
 
         <div className="pot-detail-info">
           <div>📍 <strong>장소</strong> {pot.place}</div>
-          <div>📅 <strong>일시</strong> {new Date(pot.meetingTime).toLocaleString()}</div>
+          <div>📅 <strong>일시</strong> {pot.meetingTime ? new Date(pot.meetingTime).toLocaleString() : '일정 미정'}</div>
           <div>👥 <strong>인원</strong> {currentCount} / {pot.maxPeople}명</div>
         </div>
 
@@ -180,6 +205,33 @@ export default function PotDetailPage({ user }: Props) {
             onReject={handleReject}
           />
         )}
+
+        <div className="comment-section">
+          <h3>댓글 ({comments.length})</h3>
+          {comments.map(c => (
+            <div key={c.id} className="comment-item">
+              <span className="comment-nickname">{c.user.nickname}</span>
+              <span className="comment-content">{c.content}</span>
+              {user?.id === c.userId && (
+                <button className="btn-text comment-delete" onClick={() => handleDeleteComment(c.id)}>삭제</button>
+              )}
+            </div>
+          ))}
+          {user ? (
+            <div className="comment-input-row">
+              <input
+                value={commentInput}
+                onChange={e => setCommentInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAddComment()}
+                placeholder="댓글을 입력하세요..."
+                className="comment-input"
+              />
+              <button className="btn-primary" onClick={handleAddComment}>등록</button>
+            </div>
+          ) : (
+            <p className="notice"><Link to="/login">로그인</Link>하면 댓글을 남길 수 있습니다.</p>
+          )}
+        </div>
       </div>
     </div>
   );

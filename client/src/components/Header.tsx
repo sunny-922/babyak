@@ -23,7 +23,8 @@ export default function Header({ user, onLogout }: Props) {
         <Link to="/explore">모임 찾기</Link>
         {user ? (
           <>
-            <Link to="/mypage">{user.nickname}</Link>
+            <span className="header-nickname">{user.nickname}</span>
+            <Link to="/mypage">마이페이지</Link>
             <button onClick={handleLogout} className="btn-text">로그아웃</button>
           </>
         ) : (

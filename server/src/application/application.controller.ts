@@ -17,6 +17,12 @@ export class ApplicationController {
     return this.applicationService.getApplications(Number(potId));
   }
 
+  @Get('users/me/applications')
+  @UseGuards(JwtAuthGuard)
+  getMyApplications(@Request() req: any) {
+    return this.applicationService.getMyApplications(req.user.id);
+  }
+
   @Patch('applications/:id/approve')
   @UseGuards(JwtAuthGuard)
   approveApplication(@Param('id') id: string, @Request() req: any) {

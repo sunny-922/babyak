@@ -23,10 +23,10 @@ export default function PotForm({ initialData, onSubmit, submitLabel = '생성',
     meetingTime: initialData?.meetingTime ?? '',
     maxPeople: initialData?.maxPeople ?? 1,
   });
-  const [errors, setErrors] = useState<Partial<PotFormData & { maxPeople: string }>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof PotFormData, string>>>({});
 
   const validate = (): boolean => {
-    const e: typeof errors = {};
+    const e: Partial<Record<keyof PotFormData, string>> = {};
     if (!form.title || form.title.length < 2) e.title = '제목은 2자 이상이어야 합니다.';
     if (!form.description || form.description.length < 10) e.description = '설명은 10자 이상이어야 합니다.';
     if (!form.place) e.place = '장소를 입력하세요.';
