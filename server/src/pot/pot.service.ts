@@ -28,10 +28,12 @@ export class PotService {
     return pot;
   }
 
-  createPot(dto: any, userId: number) {
-    return this.prisma.pot.create({
+  async createPot(dto: any, userId: number) {
+    const created = await this.prisma.pot.create({
       data: { ...dto, creatorId: userId, meetingTime: new Date(dto.meetingTime) },
     });
+    console.log('Created pot id:', created.id);
+    return created;
   }
 
   async updatePot(potId: number, dto: any, userId: number) {

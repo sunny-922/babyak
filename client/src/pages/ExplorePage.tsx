@@ -57,13 +57,13 @@ export default function ExplorePage({ user }: Props) {
 
       {user && (
         <p className="notice">
-          {user.school} 학교 기준으로 추천 팟을 보여드려요!
+          제목 기준으로 추천 팟을 보여드려요!
         </p>
       )}
 
       <div className="explore-controls">
         <form onSubmit={handleSchoolFilter} className="school-filter">
-          <input name="school" defaultValue={school} placeholder="학교로 검색..." />
+          <input name="school" defaultValue={school} placeholder="제목으로 찾기..." />
           <button type="submit" className="btn-primary">검색</button>
         </form>
 

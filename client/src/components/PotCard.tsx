@@ -17,14 +17,14 @@ export default function PotCard({ pot }: Props) {
         <span className={`badge ${pot.status === 'open' ? 'badge-open' : 'badge-closed'}`}>
           {pot.status === 'open' ? '모집 중' : '마감'}
         </span>
-        <span className="pot-card-creator">by {pot.creator_nickname}</span>
+        <span className="pot-card-creator">by {pot.creator?.nickname || pot.creator_nickname}</span>
       </div>
       <h3 className="pot-card-title">{pot.title}</h3>
       <p className="pot-card-desc">{pot.description}</p>
       <div className="pot-card-info">
         <span>📍 {pot.place}</span>
-        <span>📅 {new Date(pot.meeting_time).toLocaleDateString()}</span>
-        <span>👥 최대 {pot.max_people}명</span>
+        <span>📅 {new Date(pot.meetingTime || pot.meeting_time).toLocaleString()}</span>
+        <span>👥 최대 {pot.maxPeople || pot.max_people}명</span>
       </div>
     </div>
   );

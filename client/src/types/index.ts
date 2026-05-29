@@ -10,10 +10,14 @@ export interface Pot {
   title: string;
   description: string;
   place: string;
-  meeting_time: string;
-  max_people: number;
-  creator_id: number;
-  creator_nickname: string;
+  meetingTime?: string;
+  meeting_time?: string;
+  maxPeople?: number;
+  max_people?: number;
+  creatorId?: number;
+  creator_id?: number;
+  creator?: { nickname: string };
+  creator_nickname?: string;
   status: 'open' | 'closed';
 }
 

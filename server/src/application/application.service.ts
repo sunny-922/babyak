@@ -20,7 +20,7 @@ export class ApplicationService {
       const count = await tx.application.count({
         where: { potId, status: 'approved' },
       });
-      if (count >= pot.maxPeople) throw new BadRequestException('정원이 초과되었습니다.');
+      if (count >= pot.maxPeople - 1) throw new BadRequestException('정원이 초과되었습니다.');
 
       return tx.application.create({ data: { potId, userId, message } });
     });

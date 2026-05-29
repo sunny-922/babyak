@@ -21,7 +21,7 @@ export default function PotForm({ initialData, onSubmit, submitLabel = '생성',
     description: initialData?.description ?? '',
     place: initialData?.place ?? '',
     meetingTime: initialData?.meetingTime ?? '',
-    maxPeople: initialData?.maxPeople ?? 2,
+    maxPeople: initialData?.maxPeople ?? 1,
   });
   const [errors, setErrors] = useState<Partial<PotFormData & { maxPeople: string }>>({});
 
@@ -31,7 +31,7 @@ export default function PotForm({ initialData, onSubmit, submitLabel = '생성',
     if (!form.description || form.description.length < 10) e.description = '설명은 10자 이상이어야 합니다.';
     if (!form.place) e.place = '장소를 입력하세요.';
     if (!form.meetingTime || new Date(form.meetingTime) < new Date()) e.meetingTime = '날짜는 현재 이후여야 합니다.';
-    if (form.maxPeople < 2) e.maxPeople = '최대 인원은 2명 이상이어야 합니다.';
+    if (form.maxPeople < 1) e.maxPeople = '최대 인원은 1명 이상이어야 합니다.';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -95,7 +95,7 @@ export default function PotForm({ initialData, onSubmit, submitLabel = '생성',
         <input
           type="number"
           value={form.maxPeople}
-          min={2}
+          min={1}
           onChange={e => handleChange('maxPeople', Number(e.target.value))}
         />
         {errors.maxPeople && <p className="field-error">{errors.maxPeople}</p>}

@@ -32,10 +32,6 @@ export default function PotListPage({ user }: Props) {
     <div className="page-container">
       <div className="list-header">
         <h2>밥약팟 목록</h2>
-        {user
-          ? <Link to="/pots/new" className="btn-primary">+ 팟 만들기</Link>
-          : <p className="notice">로그인하면 팟을 만들고 신청할 수 있어요!</p>
-        }
       </div>
       <SearchBar />
       <FilterBox />

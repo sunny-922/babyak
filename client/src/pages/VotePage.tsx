@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { type User, type Vote } from '../types';
+import { type User, type Vote, type Pot } from '../types';
 import { getVotes, createVote } from '../api/voteApi';
+import { getPotById } from '../api/potApi';
+import { getApplications } from '../api/applicationApi';
 import VoteBox from '../components/VoteBox';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
@@ -13,6 +15,9 @@ export default function VotePage({ user }: Props) {
   const navigate = useNavigate();
 
   const [votes, setVotes] = useState<Vote[]>([]);
+  const [pot, setPot] = useState<Pot | null>(null);
+  const [canCreateVote, setCanCreateVote] = useState(false);
+  const [canVote, setCanVote] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -20,11 +25,42 @@ export default function VotePage({ user }: Props) {
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    getVotes(Number(potId))
-      .then(res => setVotes(res.data ?? []))
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [potId]);
+    const loadData = async () => {
+      try {
+        const potNum = Number(potId);
+        const [votesRes, potRes] = await Promise.all([
+          getVotes(potNum),
+          getPotById(potNum),
+        ]);
+        
+        setVotes(votesRes.data ?? []);
+        const potData = (potRes as any).data ?? potRes;
+        setPot(potData);
+
+        if (user) {
+          // creator인지 확인
+          if (potData.creator_id === user.id || potData.creatorId === user.id) {
+            setCanCreateVote(true);
+            setCanVote(true);
+          } else {
+            // 승인된 application이 있는지 확인
+            const appsRes = await getApplications(potNum);
+            const apps = appsRes.data ?? [];
+            const userApp = apps.find(app => app.user_id === user.id);
+            const isApproved = userApp?.status === 'approved';
+            setCanCreateVote(false);
+            setCanVote(isApproved);
+          }
+        }
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [potId, user]);
 
   const handleAddOption = () => {
     setNewVote(prev => ({ ...prev, options: [...prev.options, ''] }));
@@ -70,9 +106,9 @@ export default function VotePage({ user }: Props) {
       <div className="page-header">
         <button className="btn-back" onClick={() => navigate(-1)}>← 뒤로</button>
         <h2>투표</h2>
-        {user && (
-          <button className="btn-primary" onClick={() => setShowForm(v => !v)}>
-            {showForm ? '취소' : '+ 투표 만들기'}
+        {user && canCreateVote && !showForm && (
+          <button className="btn-primary" onClick={() => setShowForm(true)}>
+            + 투표 만들기
           </button>
         )}
       </div>
@@ -111,7 +147,7 @@ export default function VotePage({ user }: Props) {
       {votes.length === 0
         ? <p className="empty">아직 투표가 없습니다.</p>
         : votes.map(vote => (
-          <VoteBox key={vote.id} vote={vote} userId={user?.id ?? null} />
+          <VoteBox key={vote.id} vote={vote} userId={canVote ? user?.id ?? null : null} />
         ))
       }
     </div>

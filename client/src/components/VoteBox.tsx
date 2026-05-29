@@ -42,6 +42,9 @@ export default function VoteBox({ vote, userId }: Props) {
   return (
     <div className="vote-box">
       <h4>{vote.title}</h4>
+      {!userId && (
+        <p className="vote-permission-denied">승인된 참가자만 투표에 참여할 수 있습니다.</p>
+      )}
       <div className="vote-options">
         {vote.options.map(option => {
           const result = results?.find(r => r.optionId === option.id);

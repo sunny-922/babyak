@@ -23,8 +23,9 @@ export default function PotDetailPage({ user }: Props) {
   const [applyMessage, setApplyMessage] = useState('');
 
   const isOwner = user?.id === pot?.creatorId;
-  const myApplication = applications.find(a => a.userId === user?.id);
+  const myApplication = applications.find(a => a.user_id === user?.id);
   const approvedCount = applications.filter(a => a.status === 'approved').length;
+  const currentCount = approvedCount + 1;
 
   useEffect(() => {
     setLoading(true);
@@ -121,7 +122,7 @@ export default function PotDetailPage({ user }: Props) {
         <div className="pot-detail-info">
           <div>📍 <strong>장소</strong> {pot.place}</div>
           <div>📅 <strong>일시</strong> {new Date(pot.meetingTime).toLocaleString()}</div>
-          <div>👥 <strong>인원</strong> {approvedCount} / {pot.maxPeople}명</div>
+          <div>👥 <strong>인원</strong> {currentCount} / {pot.maxPeople}명</div>
         </div>
 
         {isOwner && (
@@ -129,6 +130,12 @@ export default function PotDetailPage({ user }: Props) {
             <button className="btn-secondary" onClick={() => setIsEditing(true)}>수정</button>
             <button className="btn-danger" onClick={handleDelete}>삭제</button>
             <Link to={`/pots/${potId}/votes`} className="btn-secondary">투표 관리</Link>
+          </div>
+        )}
+
+        {user && (myApplication?.status === 'approved' || isOwner) && !isOwner && (
+          <div className="vote-section">
+            <Link to={`/pots/${potId}/votes`} className="btn-secondary">투표</Link>
           </div>
         )}
 
